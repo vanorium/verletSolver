@@ -2,6 +2,8 @@
 
 A simple implementation of 2D Verlet physics written in JavaScript based on [Vite](https://vite.dev/) and [PixiJS](https://pixijs.com/) as renderer.
 
+![image](https://github.com/user-attachments/assets/9c01bacf-2f5c-4e80-b8b4-0f880c449464)
+
 ### Requirements
 - [Node.js](https://nodejs.org/)
 
