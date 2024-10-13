@@ -12,7 +12,6 @@
     "vite": "^5.4.8"
   },
   "dependencies": {
-    "pixi-viewport": "^3.11.1",
     "pixi.js": "^8.5.0"
   }
 }
