@@ -14,25 +14,35 @@ class VerletSolver {
     createObjectRope(options) {
         const newObjects = []
         for(let i=0; i<options.count; i++){
-            let pos = { ...options.pos, y: options.pos.y + i * options.r * 2 };
+            let pos = { ...options.pos, x: options.pos.x + i * options.r * 2 };
+
+            let isSolid = !!(!i) || i==options.count-1
 
             const obj = {           
                 pos,
                 r: options.r,
-                solid: !!(!i),
+                solid: isSolid,
                 prevX: pos.x,
                 prevY: pos.y,
-                graphics: new Graphics().circle(0, 0, options.r).fill(!i ? "darkred" : "red")
+                constraints: [],
+
+                graphics: new Graphics().circle(0, 0, options.r).fill(isSolid ? "darkred" : "red")
             }
 
+
             if(i){
-                obj.constraintAt = newObjects[i-1]
+                if(i!=options.count-1){
+                    obj.constraints.push(newObjects[i-1])
+                }                
+
+                else {
+                     newObjects[i-1].constraints.push(obj)
+                }
             }
+
             newObjects.push(obj)
         }
-        // this.objects.push(newObjects[0])
         this.objects = [...this.objects, ...newObjects]
-        console.log(newObjects)
     }
 
     createObject(options) {
@@ -42,6 +52,7 @@ class VerletSolver {
             solid: options.solid == undefined ? false : options.solid,
             prevX: options.pos.x,
             prevY: options.pos.y,
+            constraints: [],
             graphics: new Graphics().circle(0, 0, options.r).fill(options.solid ? "gray" : "red")
         })
     }
@@ -97,29 +108,31 @@ class VerletSolver {
     }
 
     applyConstraints(obj){
-        if(obj.constraintAt){
-            const distance = getDistance(obj.pos.x, obj.pos.y, obj.constraintAt.pos.x, obj.constraintAt.pos.y)
-            if(distance > 32) {
-                const axis = {
-                    x: obj.pos.x - obj.constraintAt.pos.x,
-                    y: obj.pos.y - obj.constraintAt.pos.y,
+        if(obj.constraints.length){
+            obj.constraints.forEach((constraint) => {
+                const distance = getDistance(obj.pos.x, obj.pos.y, constraint.pos.x, constraint.pos.y)
+                if(distance > 32) {
+                    const axis = {
+                        x: obj.pos.x - constraint.pos.x,
+                        y: obj.pos.y - constraint.pos.y,
+                    }
+    
+                    const delta = 32-distance
+                    
+                    const n = {
+                        x: axis.x / distance,
+                        y: axis.y / distance,
+                    }
+    
+                    obj.pos.x += 1/2 * delta * 1 * n.x
+                    obj.pos.y += 1/2 * delta * 1 * n.y
+    
+                    if(!constraint.solid){
+                        constraint.pos.x -= 1/2 * delta * 1 * n.x
+                        constraint.pos.y -= 1/2 * delta * 1 * n.y
+                    }
                 }
-
-                const delta = 32-distance
-                
-                const n = {
-                    x: axis.x / distance,
-                    y: axis.y / distance,
-                }
-
-                obj.pos.x += 1/2 * delta * 1 * n.x
-                obj.pos.y += 1/2 * delta * 1 * n.y
-
-                if(!obj.constraintAt.solid){
-                    obj.constraintAt.pos.x -= 1/2 * delta * 1 * n.x
-                    obj.constraintAt.pos.y -= 1/2 * delta * 1 * n.y
-                }
-            }
+            })
         }
     }
 

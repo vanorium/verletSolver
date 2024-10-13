@@ -6,30 +6,30 @@ const main = (app, camera) => {
             x: 1280/2-256,
             y: 720/2-512
         },
-        r: 64,
+        r: 8,
         solid: false,
     })
 
     Verlet.createObjectRope({
         pos:{
-            x: 1280/2,
-            y: 720/2-256
+            x: 1280/2-384,
+            y: 720/2
         },
         r: 16,
-        count:16
+        count:24
     })
 
 
-    Verlet.createRectangledObjects({
-        pos:{
-            x:1280/2+32,
-            y:720/2-512,
-            sizeX: 6,
-            sizeY: 6,
-        },
-        r: 16,
-        solid: false
-    })
+    // Verlet.createRectangledObjects({
+    //     pos:{
+    //         x:1280/2+32,
+    //         y:720/2-512,
+    //         sizeX: 6,
+    //         sizeY: 6,
+    //     },
+    //     r: 16,
+    //     solid: false
+    // })
 
     Verlet.createLinedObjects({
         pos:{
