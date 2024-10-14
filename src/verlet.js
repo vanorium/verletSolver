@@ -41,7 +41,7 @@ class VerletSolver {
             this.objects = [...this.objects, ...ObjectFactory.default[type](options)]
         }
         else if (type==undefined || type==''){
-            this.objects.push(this.defineObject(options))
+            this.objects.push(this.getStructure(options))
         }
         else {
             console.error(`Unknown object type: ${type}`)

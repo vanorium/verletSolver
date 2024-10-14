@@ -12,14 +12,14 @@ export default function scene(){
         solidEnd:true,
     }, 'rope')
 
-    // Verlet.create({
-    //     pos:{
-    //         x:1280/2,
-    //         y:720/2-96
-    //     },
-    //     r:16,
-    //     solid:false
-    // })
+    Verlet.create({
+        pos:{
+            x:1280/2,
+            y:720/2-96
+        },
+        r:16,
+        solid:false
+    })
 
     // Verlet.create({
     //     pos:{
