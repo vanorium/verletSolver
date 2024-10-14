@@ -1,5 +1,6 @@
 import { Graphics } from "pixi.js";
 import { getDistance } from './utils.js'
+import * as ObjectFactory from './objectFactory.js';
 
 class VerletSolver {
 
@@ -11,33 +12,7 @@ class VerletSolver {
         this.objects = []
     }
 
-    createObjectLinked(options) {
-        const newObjects = []
-        for (let i = 0; i < options.count; i++) {
-            
-            const obj = this.defineObject({...options})
-            obj.pos = { ...options.pos, x: options.pos.x + i * options.r * 2 - options.count*options.r }
-            obj.prevX = obj.pos.x
-            obj.prevY = obj.pos.y
-            obj.solid = options.solidStart && !!(!i) || options.solidEnd && i == options.count - 1 || options.solid || false
-
-            if (i) {
-                if (i==1 || i != options.count - 1) {
-                    obj.joints.push(newObjects[i - 1])
-                }
-
-                else {
-                    newObjects[i - 1].joints.push(obj)
-                }
-            }
-
-            newObjects.push(obj)
-        }
-        console.log(newObjects)
-        this.objects = [...this.objects, ...newObjects]
-    }
-
-    defineObject(options) {
+    getStructure(options) {
         if(options.hasOwnProperty('constraints')){
             options.constraints.forEach((constraint) => {
                 if(constraint.visible){
@@ -45,8 +20,7 @@ class VerletSolver {
                     constraint.graphics.alpha = 0.1
                 }
             })
-        }
-
+        }   
 
         return (
             {
@@ -62,41 +36,15 @@ class VerletSolver {
         )
     }
 
-    createObject(options) {
-        this.objects.push(this.defineObject(options))
-    }
-
-    createLineOfObjects(options) {
-        const distance = getDistance(options.pos.x1, options.pos.y1, options.pos.x2, options.pos.y2)
-        const iterations = Math.max(Math.ceil(distance / options.r) / 2, 1)
-
-        for (let t = 0; t <= 1; t += 1 / iterations) {
-            let x = options.pos.x1 + t * (options.pos.x2 - options.pos.x1)
-            let y = options.pos.y1 + t * (options.pos.y2 - options.pos.y1)
-
-            const obj = this.defineObject(options)
-            obj.pos={
-                x,y
-            }
-            obj.prevX=obj.pos.x
-            obj.prevY=obj.pos.y
-
-            this.createObject(obj)
+    create(options, type) {
+        if(typeof ObjectFactory.default[type] == 'function') {
+            this.objects = [...this.objects, ...ObjectFactory.default[type](options)]
         }
-    }
-
-    createBoxOfObjects(options) {
-        for (let x = 0; x < options.pos.sizeX; x++) {
-            for (let y = 0; y < options.pos.sizeY; y++) {
-
-                const modifedOptions = this.defineObject(options)
-                modifedOptions.pos = {
-                    x: options.pos.x + x * options.r * 2 - options.r * (options.pos.sizeX - 1),
-                    y: options.pos.y + y * options.r * 2 - options.r * (options.pos.sizeY - 1)
-                }
-
-                this.createObject(modifedOptions)
-            }
+        else if (type==undefined || type==''){
+            this.objects.push(this.defineObject(options))
+        }
+        else {
+            console.error(`Unknown object type: ${type}`)
         }
     }
 
