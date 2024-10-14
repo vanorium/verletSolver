@@ -16,7 +16,7 @@ class VerletSolver {
         for (let i = 0; i < options.count; i++) {
             
             const obj = this.defineObject({...options})
-            obj.pos = { ...options.pos, x: options.pos.x + i * options.r * 2 }
+            obj.pos = { ...options.pos, x: options.pos.x + i * options.r * 2 - options.count*options.r }
             obj.prevX = obj.pos.x
             obj.prevY = obj.pos.y
             obj.solid = options.solidStart && !!(!i) || options.solidEnd && i == options.count - 1 || options.solid || false
@@ -38,14 +38,14 @@ class VerletSolver {
     }
 
     defineObject(options) {
-        // if(options.hasOwnProperty('constraints')){
-        //     options.constraints.forEach((constraint) => {
-        //         if(constraint.visible){
-        //             constraint.graphics = new Graphics().circle(0, 0, constraint.maxDistance).fill('green')
-        //             constraint.graphics.alpha = 0.5
-        //         }
-        //     })
-        // }
+        if(options.hasOwnProperty('constraints')){
+            options.constraints.forEach((constraint) => {
+                if(constraint.visible){
+                    constraint.graphics = new Graphics().circle(0, 0, constraint.maxDistance).fill('green')
+                    constraint.graphics.alpha = 0.1
+                }
+            })
+        }
 
 
         return (
@@ -57,7 +57,7 @@ class VerletSolver {
                 prevY: options.pos.y,
                 constraints: options.constraints || [],
                 joints: [],
-                graphics: new Graphics().circle(0, 0, options.r).fill(options.solid ? "gray" : "red")
+                graphics: new Graphics().circle(0, 0, options.r).fill(options.solid ? "gray" : `hsl(${(this.objects.length*3)%48}, 100%, 50%)`)
             }
         )
     }
@@ -66,24 +66,24 @@ class VerletSolver {
         this.objects.push(this.defineObject(options))
     }
 
-    // createLineOfObjects(options) {
-    //     const distance = getDistance(options.pos.x1, options.pos.y1, options.pos.x2, options.pos.y2)
-    //     const iterations = Math.max(Math.ceil(distance / options.r) / 2, 1)
+    createLineOfObjects(options) {
+        const distance = getDistance(options.pos.x1, options.pos.y1, options.pos.x2, options.pos.y2)
+        const iterations = Math.max(Math.ceil(distance / options.r) / 2, 1)
 
-    //     for (let t = 0; t <= 1; t += 1 / iterations) {
-    //         let x = options.pos.x1 + t * (options.pos.x2 - options.pos.x1)
-    //         let y = options.pos.y1 + t * (options.pos.y2 - options.pos.y1)
+        for (let t = 0; t <= 1; t += 1 / iterations) {
+            let x = options.pos.x1 + t * (options.pos.x2 - options.pos.x1)
+            let y = options.pos.y1 + t * (options.pos.y2 - options.pos.y1)
 
-    //         const newOptions = {
-    //             r: options.r,
-    //             solid: options.solid,
-    //             pos: {
-    //                 x, y
-    //             }
-    //         }
-    //         this.createObject(newOptions)
-    //     }
-    // }
+            const obj = this.defineObject(options)
+            obj.pos={
+                x,y
+            }
+            obj.prevX=obj.pos.x
+            obj.prevY=obj.pos.y
+
+            this.createObject(obj)
+        }
+    }
 
     createBoxOfObjects(options) {
         for (let x = 0; x < options.pos.sizeX; x++) {
