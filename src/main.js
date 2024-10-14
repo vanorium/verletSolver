@@ -1,70 +1,110 @@
 import Verlet from './verlet.js'
 
 const main = (app, camera) => {
-    Verlet.createObject({
-        pos:{
-            x: 1280/2-256,
-            y: 720/2-512
-        },
-        r: 8,
-        solid: false,
-    })
+    // Verlet.createObject({
+    //     pos:{
+    //         x: 1280/2-64,
+    //         y: 720/2
+    //     },
+    //     r: 16,
+    //     constraints: [{x:1280/2, y:720/2, maxDistance:256, visible:true}],
+    //     solid: false,
+    // })
 
-    Verlet.createObjectRope({
+    // Verlet.createObject({
+    //     pos:{
+    //         x: 1280/2+64,
+    //         y: 720/2
+    //     },
+    //     r: 32,
+    //     constraints: [{x:1280/2, y:720/2, maxDistance:256}],
+    //     solid: false,
+    // })
+
+    Verlet.createObjectLinked({
         pos:{
-            x: 1280/2-384,
+            x: 1280/2,
             y: 720/2
         },
         r: 16,
-        count:24
+        count: 20,
+        solidStart:true,
+        // solidEnd:true,
     })
 
-
-    // Verlet.createRectangledObjects({
-    //     pos:{
-    //         x:1280/2+32,
-    //         y:720/2-512,
-    //         sizeX: 6,
-    //         sizeY: 6,
+    // Verlet.createBoxOfObjects({
+    //     pos: {
+    //         x: 1280 / 2,
+    //         y: 720 / 2,
+    //         sizeX: 4,
+    //         sizeY: 4,
     //     },
-    //     r: 16,
+    //     constraints: [{ x: 1280 / 2, y: 720 / 2, maxDistance: 256, visible: true }],
+    //     r: 32,
     //     solid: false
     // })
 
-    Verlet.createLinedObjects({
-        pos:{
-            x1: 1280/2-512,
-            y1: 720/2+300,
-            x2: 1280/2+512,
-            y2: 720/2+300
-        },
-        r: 16,
-        solid: true
-    })
+    // Verlet.createBoxOfObjects({
+    //     pos: {
+    //         x: 1280 / 2+256,
+    //         y: 720 / 2,
+    //         sizeX: 4,
+    //         sizeY: 4,
+    //     },
+    //     r: 32,
+    //     solid: false
+    // })
 
-    Verlet.createLinedObjects({
-        pos:{
-            x1: 1280/2-512,
-            y1: 720/2-100,
-            x2: 1280/2-512,
-            y2: 720/2+512
-        },
-        r: 4,
-        solid: true
-    })
+    // Verlet.createLineOfObjects({
+    //     pos:{
+    //         x1: 1280/2-256,
+    //         y1: 720/2+300,
+    //         x2: 1280/2+256,
+    //         y2: 720/2+300
+    //     },
+    //     r: 16,
+    //     solid: true
+    // })
 
-    Verlet.createLinedObjects({
-        pos:{
-            x1: 1280/2+512,
-            y1: 720/2-100,
-            x2: 1280/2+512,
-            y2: 720/2+512
-        },
-        r: 4,
-        solid: true
+    // Verlet.createLinedObjects({
+    //     pos:{
+    //         x1: 1280/2-512,
+    //         y1: 720/2+300,
+    //         x2: 1280/2+512,
+    //         y2: 720/2+300
+    //     },
+    //     r: 16,
+    //     solid: true
+    // })
+
+    // Verlet.createLinedObjects({
+    //     pos:{
+    //         x1: 1280/2-512,
+    //         y1: 720/2-100,
+    //         x2: 1280/2-512,
+    //         y2: 720/2+512
+    //     },
+    //     r: 4,
+    //     solid: true
+    // })
+
+    // Verlet.createLinedObjects({
+    //     pos:{
+    //         x1: 1280/2+512,
+    //         y1: 720/2-100,
+    //         x2: 1280/2+512,
+    //         y2: 720/2+512
+    //     },
+    //     r: 4,
+    //     solid: true
+    // })
+
+    Verlet.objects.forEach((obj) => {
+        camera.addChild(obj.graphics)
+        // obj.constraints.forEach((constraint) => {
+        //     camera.addChild(constraint.graphics)
+        // })
     })
-    
-    Verlet.objects.forEach((obj) => camera.addChild(obj.graphics))
 
     let tick = 0
     app.ticker.add((ticker) => {
