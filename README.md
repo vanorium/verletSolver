@@ -32,7 +32,8 @@ A collection of builded files will be collected in a folder "dist"
   
 ### Supported
 - Сircular collision
-- Rope constraint
+- Сonstraints
+- Joints
 
 ### Inspired by
 https://github.com/johnBuffer/VerletSFML
