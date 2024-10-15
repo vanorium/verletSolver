@@ -10,15 +10,15 @@ export default {
             obj.pos = { ...options.pos, x: options.pos.x + i * options.r * 2 - options.count*options.r }
             obj.prevX = obj.pos.x
             obj.prevY = obj.pos.y
-            obj.solid = options.solidStart && !!(!i) || options.solidEnd && i == options.count - 1 || options.solid || false
+            obj.pinned = options.pinnedStart && !!(!i) || options.pinnedEnd && i == options.count - 1 || options.pinned || false
     
             if (i) {
                 if (i==1 || i != options.count - 1) {
-                    obj.joints.push(res[i - 1])
+                    obj.joints.push({obj:res[i - 1], maxDistance:32})
                 }
     
                 else {
-                    res[i - 1].joints.push(obj)
+                    res[i - 1].joints.push({obj, maxDistance:32})
                 }
             }
     

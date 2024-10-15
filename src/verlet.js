@@ -26,12 +26,12 @@ class VerletSolver {
             {
                 pos: options.pos,
                 r: options.r,
-                solid: options.solid == undefined ? false : options.solid,
+                pinned: options.pinned == undefined ? false : options.pinned,
                 prevX: options.pos.x,
                 prevY: options.pos.y,
                 constraints: options.constraints || [],
                 joints: [],
-                graphics: new Graphics().circle(0, 0, options.r).fill(options.solid ? "gray" : `hsl(${(this.objects.length*3)%48}, 100%, 50%)`)
+                graphics: new Graphics().circle(0, 0, options.r).fill(options.pinned ? "gray" : `hsl(${(this.objects.length*5)%48}, 100%, 50%)`)
             }
         )
     }
@@ -65,30 +65,34 @@ class VerletSolver {
     }
 
     applyJoints(obj) {
-        obj.joints.forEach((jointObj) => {
-                const distance = getDistance(obj.pos.x, obj.pos.y, jointObj.pos.x, jointObj.pos.y)
-                if (distance > (obj.r+jointObj.r)) {
+        obj.joints.forEach((joint) => {
+                const distance = getDistance(obj.pos.x, obj.pos.y, joint.obj.pos.x, joint.obj.pos.y)
+                
+                const maxDistance = joint?.maxDistance || joint.obj.r+obj.r
+
+                if(distance>maxDistance){
                     const axis = {
-                        x: obj.pos.x - jointObj.pos.x,
-                        y: obj.pos.y - jointObj.pos.y,
+                        x: obj.pos.x - joint.obj.pos.x,
+                        y: obj.pos.y - joint.obj.pos.y,
                     }
-    
-                    const delta = obj.r+jointObj.r - distance
-    
+        
+                    const delta = maxDistance - distance
+        
                     const n = {
                         x: axis.x / distance,
                         y: axis.y / distance,
                     }
-    
+        
                     obj.pos.x += 0.5 * delta * n.x
                     obj.pos.y += 0.5 * delta * n.y
-    
-                    if (!jointObj.solid) {
-                        jointObj.pos.x -= 0.5 * delta * n.x
-                        jointObj.pos.y -= 0.5 * delta * n.y
+        
+                    if (!joint.obj.pinned) {
+                        joint.obj.pos.x -= 0.5 * delta * n.x
+                        joint.obj.pos.y -= 0.5 * delta * n.y
                     }
                 }
-        })
+
+            })
     }
 
     applyConstraints(obj) {
@@ -105,6 +109,7 @@ class VerletSolver {
                 }
 
                 const distance = getDistance(obj.pos.x, obj.pos.y, constraint.x, constraint.y)
+                
                 if (distance > constraint.maxDistance) {
                     const axis = {
                         x: obj.pos.x - constraint.x,
@@ -118,8 +123,8 @@ class VerletSolver {
                         y: axis.y / distance,
                     }
 
-                    obj.pos.x += 1 / 2 * delta * n.x
-                    obj.pos.y += 1 / 2 * delta * n.y
+                    obj.pos.x += 0.5 * delta * n.x
+                    obj.pos.y += 0.5 * delta * n.y
 
                 }
             })
@@ -148,12 +153,12 @@ class VerletSolver {
                     const massRatio1 = obj.r / (obj.r + obj2.r)
                     const massRatio2 = obj2.r / (obj.r + obj2.r)
 
-                    if (!obj.solid) {
+                    if (!obj.pinned) {
                         obj.pos.x += overlap * massRatio2 * 1 * n.x
                         obj.pos.y += overlap * massRatio2 * 1 * n.y
                     }
 
-                    if (!obj2.solid) {
+                    if (!obj2.pinned) {
                         obj2.pos.x -= overlap * massRatio1 * 1 * n.x
                         obj2.pos.y -= overlap * massRatio1 * 1 * n.y
                     }
@@ -163,10 +168,11 @@ class VerletSolver {
     }
 
     updatePosition(obj, dt) {
-        if (!obj.solid) {
+        if (!obj.pinned) {
             let oldX = obj.pos.x
             let oldY = obj.pos.y
 
+            // new pos = pos + velocity + acceleration
             obj.pos.x += obj.pos.x - obj.prevX + obj.accelerationX / this.TIME_DIVIDER * dt ** 2
             obj.pos.y += obj.pos.y - obj.prevY + obj.accelerationY / this.TIME_DIVIDER * dt ** 2
 
