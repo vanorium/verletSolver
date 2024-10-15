@@ -6,12 +6,15 @@ export default {
         const res = []
         for (let i = 0; i < options.count; i++) {
             
-            const obj = Verlet.getStructure({...options})
-            obj.pos = { ...options.pos, x: options.pos.x + i * options.r * 2 - options.count*options.r }
-            obj.prevX = obj.pos.x
-            obj.prevY = obj.pos.y
-            obj.pinned = options.pinnedStart && !!(!i) || options.pinnedEnd && i == options.count - 1 || options.pinned || false
-    
+            const modifedOptions = {...options}
+            modifedOptions.pos = {
+                x: options.pos.x + i * options.r * 2 - options.count*options.r,
+                y: modifedOptions.pos.y
+            }
+            modifedOptions.pinned = options.pinnedStart && !!(!i) || options.pinnedEnd && i == options.count - 1 || options.pinned || false
+
+            const obj = Verlet.getStructure(modifedOptions)
+
             if (i) {
                 if (i==1 || i != options.count - 1) {
                     obj.joints.push({obj:res[i - 1], maxDistance:32})
